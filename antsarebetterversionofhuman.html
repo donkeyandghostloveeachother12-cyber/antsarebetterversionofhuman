@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>antsarebetterversionofhuman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#0f172a; color:#e5e7eb; }
+    header { padding:20px; text-align:center; background:linear-gradient(135deg,#1e293b,#020617); }
+    header h1 { margin:0; font-size:2.2rem; }
+    header p { margin-top:8px; color:#94a3b8; }
+    nav { display:flex; justify-content:center; gap:20px; padding:15px; background:#020617; flex-wrap:wrap; }
+    nav a { color:#38bdf8; text-decoration:none; font-weight:bold; }
+    nav a:hover { text-decoration:underline; }
+    main { max-width:1000px; margin:40px auto; padding:0 20px; }
+    .card { background:#020617; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 10px 20px rgba(0,0,0,0.3); }
+    .card h2 { margin-top:0; color:#38bdf8; }
+    input, textarea, button { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:none; }
+    button { background:#38bdf8; color:#020617; font-weight:bold; cursor:pointer; }
+    button:hover { opacity:0.9; }
+    .post { border-bottom:1px solid #1e293b; padding:10px 0; }
+    .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+    .gallery img { width:100%; border-radius:8px; }
+    .file-list a { display:block; color:#38bdf8; margin-top:6px; }
+    footer { text-align:center; padding:20px; color:#64748b; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>antsarebetterversionofhuman</h1>
+  <p>Stories, thoughts, and quiet rebellions.</p>
+</header>
+
+<nav>
+  <a href="#home">Home</a>
+  <a href="#blogs">Blogs</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#files">Files</a>
+</nav>
+
+<main>
+  <section id="home" class="card">
+    <h2>Welcome</h2>
+    <p>This is my personal space on the internet. I post stories, picture quotes, and files here. Simple. Clean. Mine.</p>
+  </section>
+
+  <!-- BLOG SYSTEM -->
+  <section id="blogs" class="card">
+    <h2>Story Blogs</h2>
+    <input type="text" id="blogTitle" placeholder="Blog title" />
+    <textarea id="blogContent" rows="5" placeholder="Write your story..."></textarea>
+    <button onclick="addBlog()">Publish</button>
+    <div id="blogPosts"></div>
+  </section>
+
+  <!-- IMAGE GALLERY -->
+  <section id="gallery" class="card">
+    <h2>Image Gallery</h2>
+    <input type="file" accept="image/*" onchange="addImage(event)" />
+    <div id="galleryGrid" class="gallery"></div>
+  </section>
+
+  <!-- FILE UPLOADS -->
+  <section id="files" class="card">
+    <h2>Files</h2>
+    <input type="file" onchange="addFile(event)" />
+    <div id="fileList" class="file-list"></div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 antsarebetterversionofhuman</p>
+</footer>
+
+<script>
+  // BLOG SYSTEM (localStorage)
+  const blogPostsDiv = document.getElementById('blogPosts');
+  let blogs = JSON.parse(localStorage.getItem('blogs')) || [];
+
+  function renderBlogs() {
+    blogPostsDiv.innerHTML = '';
+    blogs.forEach(post => {
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p>`;
+      blogPostsDiv.appendChild(div);
+    });
+  }
+
+  function addBlog() {
+    const title = document.getElementById('blogTitle').value;
+    const content = document.getElementById('blogContent').value;
+    if (!title || !content) return;
+    blogs.unshift({ title, content });
+    localStorage.setItem('blogs', JSON.stringify(blogs));
+    document.getElementById('blogTitle').value = '';
+    document.getElementById('blogContent').value = '';
+    renderBlogs();
+  }
+
+  renderBlogs();
+
+  // IMAGE GALLERY
+  const galleryGrid = document.getElementById('galleryGrid');
+  let images = JSON.parse(localStorage.getItem('images')) || [];
+
+  function renderImages() {
+    galleryGrid.innerHTML = '';
+    images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      galleryGrid.appendChild(img);
+    });
+  }
+
+  function addImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      images.unshift(reader.result);
+      localStorage.setItem('images', JSON.stringify(images));
+      renderImages();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  renderImages();
+
+  // FILE UPLOADS
+  const fileListDiv = document.getElementById('fileList');
+  let files = JSON.parse(localStorage.getItem('files')) || [];
+
+  function renderFiles() {
+    fileListDiv.innerHTML = '';
+    files.forEach(file => {
+      const a = document.createElement('a');
+      a.href = file.data;
+      a.download = file.name;
+      a.textContent = file.name;
+      fileListDiv.appendChild(a);
+    });
+  }
+
+  function addFile(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      files.unshift({ name: file.name, data: reader.result });
+      localStorage.setItem('files', JSON.stringify(files));
+      renderFiles();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  renderFiles();
+</script>
+
+</body>
+</html>
